@@ -7,7 +7,7 @@ Minimal implementation of a [treap](https://en.wikipedia.org/wiki/Treap) based p
 Example usage:
 
 ```python
-from treaccp import build_treaccp, join_proofs
+from treaccp import build_treaccp, ErrInvalidProof
 
 elements = set(range(1000))
 treap = build_treaccp(elements)
@@ -95,6 +95,8 @@ Along with `proof` which is a subtree of our current state, we can also receive 
 
 Example usage:
 ```python
+from treaccp import build_treaccp, join_proofs
+
 # Rather than inserting and removing elements individually, we can warp to a new state
 elements = set(range(1000))
 treap = build_treaccp(elements)
@@ -113,6 +115,8 @@ for el in remove_elements:
 joined_proof = join_proofs(proofs)
 
 # We only insert elements, we've already proven them
+treap, _ = treap.insert_many(insert_elements, prove=False)
+treap, _ = treap.remove_many(remove_elements, prove=False)
 acc1, new_proof = acc1.insert_many(insert_elements, joined_proof)
 acc1, newer_proof = acc1.remove_many(remove_elements, new_proof)
 
@@ -121,6 +125,7 @@ acc1, newer_proof = acc1.remove_many(remove_elements, new_proof)
 # warp from state joined_proof to new state newer_proof without inserting or removing elements
 acc2, _ = acc2.warp(joined_proof, set(insert_elements), set(remove_elements), newer_proof)
 
+assert treap.merkle_root == acc1.merkle_root
 assert acc2.merkle_root == acc1.merkle_root
 ```
 

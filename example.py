@@ -49,16 +49,17 @@ for el in remove_elements:
 joined_proof = join_proofs(proofs)
 
 # We only insert elements, we've already proven them
+treap, _ = treap.insert_many(insert_elements, prove=False)
+treap, _ = treap.remove_many(remove_elements, prove=False)
 acc1, new_proof = acc1.insert_many(insert_elements, joined_proof)
 acc1, newer_proof = acc1.remove_many(remove_elements, new_proof)
 
 # joined_proof - a proof for inserting and deleting elements
 # newer_proof - state after insertion and deletions into joined_proof
-# we warp from state "joined_proof" to new state "newer_proof" without inserting or removing elements individually
-acc2, _ = acc2.warp(
-    joined_proof, set(insert_elements), set(remove_elements), newer_proof
-)
+# warp from state joined_proof to new state newer_proof without inserting or removing elements
+acc2, _ = acc2.warp(joined_proof, set(insert_elements), set(remove_elements), newer_proof)
 
+assert treap.merkle_root == acc1.merkle_root
 assert acc2.merkle_root == acc1.merkle_root
 
 print("Check readme for details.")
